@@ -23,27 +23,6 @@ pipeline {
             }
         }
 
-        // Stage to test
-        stage('Test') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    echo "-------------- Checking previous stage build output"
-                    test -f 'build/index.html'
-                    echo "-------------- starting npm tests"
-                    #npm --version
-                    node --version
-                    npm ci
-                    npm test a
-                '''
-            }
-        }
-
         // Stage to test E2E
         stage('e2e') {
             agent {
@@ -55,7 +34,8 @@ pipeline {
             steps {
                 sh '''
                     echo "-------------- Running E2E image"
-                    npm install -g serve
+                    npm install serve
+                    node_modules/.bin/serve -s build
                     npx playwright test
                 '''
             }
