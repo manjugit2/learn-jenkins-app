@@ -43,11 +43,12 @@ pipeline {
                             npm test a
                         '''
                     }
+                    /*
                     post {
                         always {
                             junit 'e2e-test-results/junit.xml'
                         }
-                    }
+                    } */
                 }
 
                 // Stage to test E2E
@@ -66,12 +67,12 @@ pipeline {
                             sleep 10
                             npx playwright test --reporter=html
                         '''
-                    }
+                    } /*
                     post {
                         always {
                             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: 'play index report', useWrapperFileDirectly: true])
                         }
-                    }
+                    } */
                 }
 
             }
