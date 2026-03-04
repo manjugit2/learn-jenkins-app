@@ -28,13 +28,17 @@ pipeline {
                     reuseNode true
                 }
             }
-            echo "-------------- Checking previous stage build output"
-            
-            echo "-------------- starting npm tests"
-            npm --version
-            node --version
-            npm ci
-            npm test a
+            steps {
+                sh '''
+                    echo "-------------- Checking previous stage build output"
+                    test -f 'build/index.html'
+                    echo "-------------- starting npm tests"
+                    npm --version
+                    node --version
+                    npm ci
+                    npm test a
+                '''
+            }
         }
     }
 }
