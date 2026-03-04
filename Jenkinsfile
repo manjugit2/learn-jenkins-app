@@ -23,51 +23,51 @@ pipeline {
             }
         }
 
-        // Stage to test
-        stage('Test') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
+        stage('Run all tests') {
+            parallel {
+                stage('Test') {
+                    agent {
+                        docker {
+                            image 'node:18-alpine'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        sh '''
+                            echo "-------------- Checking previous stage build output"
+                            test -f 'build/index.html'
+                            echo "-------------- starting npm tests"
+                            #npm --version
+                            node --version
+                            npm ci
+                            npm test a
+                        '''
+                    }
                 }
-            }
-            steps {
-                sh '''
-                    echo "-------------- Checking previous stage build output"
-                    test -f 'build/index.html'
-                    echo "-------------- starting npm tests"
-                    #npm --version
-                    node --version
-                    npm ci
-                    npm test a
-                '''
-            }
-        }
 
-        // Stage to test E2E
-        stage('e2e') {
-            agent {
-                docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                    reuseNode true
+                // Stage to test E2E
+                stage('e2e') {
+                    agent {
+                        docker {
+                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        sh '''
+                            echo "-------------- Running E2E image"
+                            npm install serve
+                            node_modules/.bin/serve -s build &
+                            sleep 10
+                            npx playwright test --reporter=html
+                        '''
+                    }
                 }
-            }
-            steps {
-                sh '''
-                    echo "-------------- Running E2E image"
-                    npm install serve
-                    node_modules/.bin/serve -s build &
-                    sleep 10
-                    npx playwright test --reporter=html
-                '''
+
             }
         }
     }
 
-    /* 
-        stage to review test resulsts irrespective of success or fail
-        Results alys provided
-    */
     post {
         always {
             junit 'e2e-test-results/junit.xml'
