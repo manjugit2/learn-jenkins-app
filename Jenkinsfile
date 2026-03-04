@@ -10,6 +10,7 @@ pipeline {
                 }
             }
             steps {
+                // Stage to build SW
                 sh '''
                     echo "-------------- building Node.js"
                     ls -la
@@ -21,6 +22,8 @@ pipeline {
                    '''
             }
         }
+
+        // Stage to test
         stage('Test') {
             agent {
                 docker {
@@ -33,7 +36,7 @@ pipeline {
                     echo "-------------- Checking previous stage build output"
                     test -f 'build/index.html'
                     echo "-------------- starting npm tests"
-                    npm --version
+                    #npm --version
                     node --version
                     npm ci
                     npm test a
@@ -41,6 +44,11 @@ pipeline {
             }
         }
     }
+
+    /* 
+        stage to review test resulsts irrespective of success or fail
+        Results alys provided
+    */
     post {
         always {
             junit 'test-results/junit.xml'
