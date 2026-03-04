@@ -29,7 +29,7 @@ pipeline {
                 }
             }
             echo "-------------- Checking previous stage build output"
-            test -f /build/index.html 
+            test -f 'build/index.html '
             echo "-------------- starting npm tests"
             npm --version
             node --version
