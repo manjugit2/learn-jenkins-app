@@ -11,7 +11,7 @@ pipeline {
             }
             steps {
                 sh '''
-                echo "building Node.js"
+                    echo "-------------- building Node.js"
                     ls -la
                     node --version
                     npm --version
@@ -20,6 +20,21 @@ pipeline {
                     ls -la
                    '''
             }
+        }
+        stage('Test') {
+            agent {
+                docker {
+                    image 'node18-alpine'
+                    reuseNode true
+                }
+            }
+            echo "-------------- Checking previous stage build output"
+            test -f /build/index.html 
+            echo "-------------- starting npm tests"
+            npm --version
+            node --version
+            npm ci
+            npm test a
         }
     }
 }
