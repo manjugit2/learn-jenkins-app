@@ -12,7 +12,7 @@ pipeline {
             steps {
                 // Stage to build SW
                 sh '''
-                    echo "-------------- building Node.js"
+                    echo "-------------- building Node.js LOCALLY"
                     ls -la
                     node --version
                     npm --version
