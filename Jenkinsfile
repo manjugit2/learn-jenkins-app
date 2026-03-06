@@ -69,16 +69,16 @@ pipeline {
                     npx playwright test --reporter=html
                 '''
             } 
-            //from local Manjunath
+            
             post {
                 always {
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'HTM Llocal Report', reportTitles: 'play index report', useWrapperFileDirectly: true])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'HTML local Report', reportTitles: 'play index report', useWrapperFileDirectly: true])
                 }
             } 
         }
 
     // Deploy build using Netlify CLI
-       stage('Deploy') {
+       stage('Deploy Staging') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -87,18 +87,34 @@ pipeline {
             }
             steps {
                     sh '''
-                    echo "-------------- Deploying to Netlify CLI"
-                    echo "------------- Added pooling in configuration"
                     npm install netlify-cli@20.1.1
                     node_modules/.bin/netlify --version
-                    echo "Site ID: $NETLIFY_SITE_ID"
+                    echo "-------------- Deploying Staging: Site ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod --message="Automated deployment from Jenkins pipeline"
+                    node_modules/.bin/netlify deploy --dir=build
                    '''
             }
         }
 
-        stage('Production e2e') {
+        stage('Deploy Production') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                    sh '''
+                    npm install netlify-cli@20.1.1
+                    node_modules/.bin/netlify --version
+                    echo "-------------- Deploying Production: Site ID: $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --prod --message="Automated deployment from Jenkins pipeline"
+                   '''
+            } 
+        }
+
+        stage('Production e2e production') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -110,16 +126,16 @@ pipeline {
             }
             steps {
                 sh '''
-                    echo "-------------- Production e2e test"
+                    echo "-------------- Production e2e test $CI_ENVIRONMENT_URL"
                     npx playwright test --reporter=html
                 '''
             } 
-            //from local Manjunath
+            
             post {
                 always {
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'e2e HTML Report', reportTitles: 'play index report', useWrapperFileDirectly: true])
                 }
             } 
-        }
+        }        
     }
 }
