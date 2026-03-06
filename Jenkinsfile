@@ -96,6 +96,13 @@ pipeline {
             }
         }
 
+        stage('Approval') {
+            timeout(time: 20, unit: 'SECONDS') {
+                input message: 'Approve OR Abort the Deployment', ok: 'Deploy'
+            }
+
+        }
+        
         stage('Deploy Production') {
             agent {
                 docker {
