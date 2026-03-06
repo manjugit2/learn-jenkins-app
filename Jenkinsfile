@@ -88,6 +88,7 @@ pipeline {
             steps {
                     sh '''
                     echo "-------------- Deploying to Netlify CLI"
+                    echo "------------- Added pooling in configuration"
                     npm install netlify-cli@20.1.1
                     node_modules/.bin/netlify --version
                     echo "Site ID: $NETLIFY_SITE_ID"
