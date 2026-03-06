@@ -72,7 +72,7 @@ pipeline {
             //from local Manjunath
             post {
                 always {
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'HTML Report', reportTitles: 'play index report', useWrapperFileDirectly: true])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'HTM Llocal Report', reportTitles: 'play index report', useWrapperFileDirectly: true])
                 }
             } 
         }
@@ -96,6 +96,30 @@ pipeline {
                     node_modules/.bin/netlify deploy --dir=build --prod --message="Automated deployment from Jenkins pipeline"
                    '''
             }
+        }
+
+        stage('Production e2e') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+            environment {
+                CI_ENVIRONMENT_URL = 'https://dainty-brioche-d750f0.netlify.app'
+            }
+            steps {
+                sh '''
+                    echo "-------------- Production e2e test"
+                    npx playwright test --reporter=html
+                '''
+            } 
+            //from local Manjunath
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'e2e HTML Report', reportTitles: 'play index report', useWrapperFileDirectly: true])
+                }
+            } 
         }
     }
 }
