@@ -71,9 +71,7 @@ pipeline {
                 }
             } 
         }
-    }
-
-        stage('Deploy') {
+       stage('Deploy') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -86,5 +84,6 @@ pipeline {
                     node_modules/.bin/netlify --version
                    '''
             }
-        }    
+        }
+    }
 }
