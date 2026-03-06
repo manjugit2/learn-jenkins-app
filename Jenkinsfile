@@ -76,6 +76,8 @@ pipeline {
                 }
             } 
         }
+
+    // Deploy build using Netlify CLI
        stage('Deploy') {
             agent {
                 docker {
@@ -90,6 +92,7 @@ pipeline {
                     node_modules/.bin/netlify --version
                     echo "Site ID: $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --prod --message="Automated deployment from Jenkins pipeline"
                    '''
             }
         }
