@@ -77,7 +77,9 @@ pipeline {
             } 
         }
 
-    // Deploy build using Netlify CLI
+    // Staging has been split into two steps Deploy staging will parse the input and store json content 
+    // and assign to env var. NextStaging e2e will use this var and complete the staging process
+    // Staging step 1: First half
        stage('Deploy Staging') {
             agent {
                 docker {
@@ -99,10 +101,11 @@ pipeline {
             }
         }
 
+    // Staging step 2: Second half
       stage('Staging e2e') {
             agent {
                 docker {
-                    image 'node:18-alpine'
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                     reuseNode true
                 }
             }
